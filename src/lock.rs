@@ -72,6 +72,7 @@ pub struct RangeLockGuard<'lock, T: 'lock + Copy + Debug>(
 pub enum RangeLockResult<'lock, T: 'lock + Copy + Debug> {
     Ok(RangeLockGuard<'lock, T>),
     RangeConflict,
+    BadRange,
     OtherError,
 }
 
@@ -80,6 +81,12 @@ pub enum RangeLockResult<'lock, T: 'lock + Copy + Debug> {
 pub struct RangeLock<T: Copy + Debug> {
     ranges: Mutex<IntervalForest>,
     data: UnsafeCell<Vec<T>>,
+}
+
+impl<T> RangeLock<T> where T: Copy + Debug {
+    fn len(&self) -> u64 {
+        unsafe { (*self.data.get()).len() as u64 }
+    }
 }
 
 /// make sure the RangeLock can be shared between threads
@@ -124,6 +131,10 @@ where
 
     /// get a range of data to mutate
     pub fn get_mut(&self, range: Range<usize>) -> RangeLockResult<T> {
+        // check range limits
+        if !(range.end < (self.len() as usize)) {
+            return RangeLockResult::BadRange;
+        }
         // get a typed range
         let trange = RangeType::Write(range.clone());
         // evaluate whether or not the range can be accessed
@@ -147,6 +158,10 @@ where
 
     /// get a range of data to read
     pub fn get(&self, range: Range<usize>) -> RangeLockResult<T> {
+        // check range limits
+        if !(range.end < (self.len() as usize)) {
+            return RangeLockResult::BadRange;
+        }
         // get a typed range
         let trange = RangeType::Read(range.clone());
         // evaluate whether or not the range can be accessed
@@ -256,6 +271,17 @@ mod tests {
         let lock2 = lock.clone();
         let _a_read = lock1.get_mut(0..3);
         if let RangeLockResult::RangeConflict = lock2.get(2..4) {
+            assert!(true);
+        } else {
+            assert!(false)
+        };
+    }
+
+    #[test]
+    fn range_limit_test() {
+        let data: Vec<usize> = vec![0, 1, 2, 3, 4, 5];
+        let lock = Arc::new(RangeLock::from(data));
+        if let RangeLockResult::BadRange  = lock.get_mut(6..9) {
             assert!(true);
         } else {
             assert!(false)

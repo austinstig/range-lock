@@ -44,6 +44,9 @@ fn using_coroutines(workers: usize) {
                 RangeLockResult::RangeConflict => {
                     println!("worker[{}] RANGE CONFLICT", idx);
                 }
+                RangeLockResult::BadRange => {
+                    println!("worker[{}] BAD RANGE", idx);
+                }
                 RangeLockResult::OtherError => {
                     println!("worker[{}] OTHER ERROR", idx);
                 }
@@ -68,6 +71,9 @@ fn using_coroutines(workers: usize) {
         }
         RangeLockResult::RangeConflict => {
             println!("worker[FINAL] RANGE CONFLICT");
+        }
+        RangeLockResult::BadRange => {
+            println!("worker[FINAL] BAD RANGE");
         }
         RangeLockResult::OtherError => {
             println!("worker[FINAL] OTHER ERROR");
@@ -105,6 +111,9 @@ fn using_std_threads() {
                 RangeLockResult::RangeConflict => {
                     println!("thread[{}] RANGE CONFLICT", idx);
                 }
+                RangeLockResult::BadRange => {
+                    println!("thread[FINAL] BAD RANGE");
+                }
                 RangeLockResult::OtherError => {
                     println!("thread[{}] OTHER ERROR", idx);
                 }
@@ -129,6 +138,9 @@ fn using_std_threads() {
         }
         RangeLockResult::RangeConflict => {
             println!("thread[FINAL] RANGE CONFLICT");
+        }
+        RangeLockResult::BadRange => {
+            println!("thread[FINAL] BAD RANGE");
         }
         RangeLockResult::OtherError => {
             println!("thread[FINAL] OTHER ERROR");
