@@ -144,13 +144,13 @@ where
     T: Copy + Debug,
 {
     /// get a reference to the data
-    fn data(&self) -> Option<&Vec<T>> {
-        unsafe { self.data.get().as_ref() }
+    fn data(&self) -> Option<&[T]> {
+        unsafe { self.data.get().as_ref().map(Vec::as_slice) }
     }
 
     /// get a mutable reference to the data
-    fn data_mut(&self) -> Option<&mut Vec<T>> {
-        unsafe { self.data.get().as_mut() }
+    fn data_mut(&self) -> Option<&mut [T]> {
+        unsafe { self.data.get().as_mut().map(Vec::as_mut_slice) }
     }
 
     /// return a lock of the ranges
