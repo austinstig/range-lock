@@ -17,6 +17,7 @@ use std::cell::UnsafeCell;
 use std::thread;
 
 // TODO: add some bounds checks on the range
+// TODO: make the ranges an interval tree and perhaps use split_at(s)
 
 fn overlaps(x: &Range<usize>, y: &Range<usize>) -> bool {
     x.start <= y.end && y.start <= x.end
