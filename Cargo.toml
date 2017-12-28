@@ -1,0 +1,10 @@
+[package]
+name = "range-lock"
+version = "0.1.0"
+authors = ["Austin Davis <austinvdavis@gmail.com>"]
+
+[dependencies]
+ndarray = "0.10.13"
+may = "0.1.0"
+derive-new = "0.5.0"
+derive_is_enum_variant = "0.1.1"
